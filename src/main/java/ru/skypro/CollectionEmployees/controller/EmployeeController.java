@@ -8,6 +8,7 @@ import ru.skypro.CollectionEmployees.Employee;
 import ru.skypro.CollectionEmployees.Service.EmployeeService;
 
 import java.util.Collection;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/Employee")
@@ -34,7 +35,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public Collection<Employee> findAll() {
-        return service.findAll();
+    public Map<String, Employee> getAll() {
+        return service.getAll();
     }
 }
