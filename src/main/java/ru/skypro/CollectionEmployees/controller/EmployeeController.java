@@ -10,7 +10,7 @@ import ru.skypro.CollectionEmployees.Service.EmployeeService;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/Emploee")
+@RequestMapping("/Employee")
 public class EmployeeController {
     private EmployeeService service;
 
@@ -19,7 +19,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/add")
-    public Employee addEmploee(@RequestParam String firstName, @RequestParam String lastName) {
+    public Employee addEmployee(@RequestParam String firstName, @RequestParam String lastName) {
         return service.add (firstName, lastName);
     }
 
