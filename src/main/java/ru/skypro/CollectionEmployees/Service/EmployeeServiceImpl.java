@@ -6,25 +6,38 @@ import ru.skypro.CollectionEmployees.Exceptions.EmployeeAlreadeAddeException;
 import ru.skypro.CollectionEmployees.Exceptions.EmployeeNotFounException;
 import ru.skypro.CollectionEmployees.Exceptions.EmployeeStorageIsFullException;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final int MAX_SIZE = 3;
+    private final int MAX_SIZE = 10;
+
+    @PostConstruct
+    public void initEmployees() {
+        add("Ivan", "Ivanov", 150_000, 1);
+        add("Andrey", "Petrov", 250_000, 1);
+        add("Max", "Mikuloz", 100_000, 1);
+
+        add("Sergey", "Sadov", 190_000, 2);
+        add("Vlad", "Truxan", 180_000, 2);
+
+        add("Vladimir", "Truxanov", 40_000, 3);
+    }
 
     private final Map<String, Employee> employees = new HashMap<>();
 
 
     @Override
-    public Employee add(String firstName, String lastName) {
+    public Employee add(String firstName, String lastName, Integer salary, Integer department) {
         if (employees.size() >= MAX_SIZE) {
             throw new EmployeeStorageIsFullException("Хранилище заполнено.");
         }
         if (employees.containsKey(getKey(firstName, lastName))) {
             throw new EmployeeAlreadeAddeException("Сотрудник уже имеется.");
         }
-        Employee employee = new Employee(firstName, lastName);
+        Employee employee = new Employee(firstName, lastName, salary, department);
         employees.put(getKey(employee), employee);//добавить
         return employee;
     }
