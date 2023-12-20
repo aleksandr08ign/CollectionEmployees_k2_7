@@ -2,6 +2,7 @@ package ru.skypro.CollectionEmployees.Service;
 
 import org.springframework.stereotype.Service;
 import ru.skypro.CollectionEmployees.Employee;
+import ru.skypro.CollectionEmployees.Exceptions.EmployeeNotFounException;
 
 import java.util.Comparator;
 import java.util.List;
@@ -13,6 +14,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final EmployeeService employeeService;
 
+
     public DepartmentServiceImpl(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
@@ -23,7 +25,8 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .stream()
                 .filter(employee -> departmentid.equals(employee.getDepartment()))
                 .max(Comparator.comparingInt(Employee::getSalary))
-                .orElse(null);
+                .orElseThrow(() -> new EmployeeNotFounException("нет сотрудников в указанном департаменте."));
+        //.orElse(null);
     }
 
     @Override
@@ -32,7 +35,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .stream()
                 .filter(employee -> departmentid.equals(employee.getDepartment()))
                 .min(Comparator.comparingInt(Employee::getSalary))
-                .orElse(null);
+                .orElseThrow(() -> new EmployeeNotFounException("нет сотрудников в указанном департаменте."));
     }
 
     @Override
