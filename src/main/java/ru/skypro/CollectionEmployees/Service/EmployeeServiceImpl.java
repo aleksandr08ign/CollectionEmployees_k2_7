@@ -6,57 +6,70 @@ import ru.skypro.CollectionEmployees.Exceptions.EmployeeAlreadeAddeException;
 import ru.skypro.CollectionEmployees.Exceptions.EmployeeNotFounException;
 import ru.skypro.CollectionEmployees.Exceptions.EmployeeStorageIsFullException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import javax.annotation.PostConstruct;
+import java.util.*;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final int MAX_SIZE = 3;
+    private final int MAX_SIZE = 10;
 
-    private final List<Employee> employeeList;
+    @PostConstruct
+    public void initEmployees() {
+        add("Ivan", "Ivanov", 150_000, 1);
+        add("Andrey", "Petrov", 250_000, 1);
+        add("Max", "Mikuloz", 100_000, 1);
 
-    public EmployeeServiceImpl() {
-        this.employeeList = new ArrayList<>();
+        add("Sergey", "Sadov", 190_000, 2);
+        add("Vlad", "Truxan", 180_000, 2);
+
+        add("Vladimir", "Truxanov", 40_000, 3);
     }
 
-    @Override
-    public Employee add(String firstName, String lastName) {
+    private final Map<String, Employee> employees = new HashMap<>();
 
-        if (employeeList.size() >= MAX_SIZE) {
+
+    @Override
+    public Employee add(String firstName, String lastName, Integer salary, Integer department) {
+        if (employees.size() >= MAX_SIZE) {
             throw new EmployeeStorageIsFullException("Хранилище заполнено.");
         }
-            Employee employee = new Employee(firstName, lastName);
-        if (employeeList.contains(employee)) {
+        if (employees.containsKey(getKey(firstName, lastName))) {
             throw new EmployeeAlreadeAddeException("Сотрудник уже имеется.");
         }
-        employeeList.add(employee);
+        Employee employee = new Employee(firstName, lastName, salary, department);
+        employees.put(getKey(employee), employee);//добавить
         return employee;
     }
 
     @Override
     public Employee remove(String firstName, String lastName) {
-        Employee employee = new Employee(firstName, lastName);
-        if (!employeeList.contains(employee)) {
+        if (!employees.containsKey(getKey(firstName, lastName))) {
             throw new EmployeeAlreadeAddeException("Сотрудник не найден в хранилище.");
         }
-        employeeList.remove(employee);
-        return employee;
+        return employees.remove(getKey(firstName, lastName)); //удалить
     }
 
     @Override
     public Employee find(String firstName, String lastName) {
-        Employee employee = new Employee(firstName, lastName);
-        if (employeeList.contains(employee)) {
-            return employee;
+        Employee employee = employees.get(getKey(firstName, lastName));
+        if (employee == null) {
+            throw new EmployeeNotFounException("Сотрудник " + firstName + " " + lastName + " не найден.");
         }
-        throw new EmployeeNotFounException("Сотрудник " + firstName +" "+ lastName + " не найден.");
+        return employee;
     }
 
     @Override
-    public Collection<Employee> findAll() {
-        return Collections.unmodifiableCollection(employeeList);
+    public Map<String, Employee> getAll() {
+        return Collections.unmodifiableMap(employees);
+    }
+
+    private static String getKey(String firstName, String lastName) {
+        return firstName + lastName;
+    }
+
+    private static String getKey(Employee employee) {
+        return employee.getFirstName() + employee.getLastName();
     }
 }
+
